@@ -20,6 +20,7 @@ langchain-openai==0.2.2           # For OpenAI/OpenRouter/LM Studio
 # Database Connectors (install what you need)
 snowflake-connector-python==3.12.3  # For Snowflake
 psycopg2-binary==2.9.9              # For PostgreSQL (also Redshift, CockroachDB, Supabase)
+pyodbc==5.1.0                       # For SQL Server and Azure SQL
 
 # Vector Store (local, free)
 chromadb==0.5.7

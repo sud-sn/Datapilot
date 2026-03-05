@@ -82,6 +82,13 @@ POSTGRESQL_PATTERNS = [
     r'\bREINDEX\b', r'\bCLUSTER\b',
 ]
 
+# SQL Server-specific dangerous operations
+SQLSERVER_PATTERNS = [
+    r'\bxp_cmdshell\b', r'\bsp_execute\b', r'\bsp_executesql\b',
+    r'\bsp_OACreate\b', r'\bsp_OAMethod\b', r'\bOPENROWSET\b',
+    r'\bOPENDATASOURCE\b',
+]
+
 # Injection patterns
 INJECTION_PATTERNS = [
     r';\s*\w',           # Multiple statements (semicolon followed by keyword)
@@ -94,7 +101,7 @@ INJECTION_PATTERNS = [
     r'\bSLEEP\b',
 ]
 
-ALL_BLOCKED = DDL_PATTERNS + DML_PATTERNS + ADMIN_PATTERNS + SNOWFLAKE_PATTERNS + POSTGRESQL_PATTERNS + INJECTION_PATTERNS
+ALL_BLOCKED = DDL_PATTERNS + DML_PATTERNS + ADMIN_PATTERNS + SNOWFLAKE_PATTERNS + POSTGRESQL_PATTERNS + SQLSERVER_PATTERNS + INJECTION_PATTERNS
 
 
 class SQLValidator:
@@ -216,10 +223,16 @@ class SQLValidator:
                 f"Query has {subquery_count} subqueries. Consider simplifying."
             )
 
-        # ── Layer 8: Add LIMIT if missing ───────────────────
-        if not re.search(r'\bLIMIT\b', sql_upper):
-            sql = f"{sql}\nLIMIT {self.max_rows}"
-            warnings.append(f"Added LIMIT {self.max_rows} for safety.")
+        # ── Layer 8: Add LIMIT or TOP if missing ────────────
+        is_sql_server = self.settings.db_source.lower() == "sqlserver"
+        if is_sql_server:
+            if not re.search(r'\bTOP\b', sql_upper) and not re.search(r'\bOFFSET\b', sql_upper):
+                sql = re.sub(r'(?i)^\s*SELECT\b', f'SELECT TOP {self.max_rows} ', sql, count=1)
+                warnings.append(f"Added TOP {self.max_rows} for safety.")
+        else:
+            if not re.search(r'\bLIMIT\b', sql_upper):
+                sql = f"{sql}\nLIMIT {self.max_rows}"
+                warnings.append(f"Added LIMIT {self.max_rows} for safety.")
 
         # ── Final verdict ───────────────────────────────────
         is_safe = len(errors) == 0

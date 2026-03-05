@@ -26,11 +26,11 @@ CONNECTOR_REGISTRY: Dict[str, tuple] = {
     "snowflake":  ("connectors.snowflake_connector", "SnowflakeConnector"),
     "postgresql":  ("connectors.postgres_connector",  "PostgreSQLConnector"),
     "postgres":    ("connectors.postgres_connector",  "PostgreSQLConnector"),  # alias
+    "sqlserver":   ("connectors.sqlserver_connector", "SQLServerConnector"),
     # ── Future connectors (uncomment when implemented) ───
     # "mysql":       ("connectors.mysql_connector",      "MySQLConnector"),
     # "bigquery":    ("connectors.bigquery_connector",   "BigQueryConnector"),
     # "redshift":    ("connectors.redshift_connector",   "RedshiftConnector"),
-    # "sqlserver":   ("connectors.sqlserver_connector",  "SQLServerConnector"),
     # "clickhouse":  ("connectors.clickhouse_connector", "ClickHouseConnector"),
     # "databricks":  ("connectors.databricks_connector", "DatabricksConnector"),
     # "duckdb":      ("connectors.duckdb_connector",     "DuckDBConnector"),

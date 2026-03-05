@@ -131,6 +131,27 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO datapilot_ro
 
 Also works with: **Amazon Redshift**, **CockroachDB**, **Supabase**, **Neon**, **AlloyDB**, **TimescaleDB**.
 
+### Azure SQL / SQL Server
+
+```env
+DATAPILOT_DB_SOURCE=sqlserver
+
+DATAPILOT_DB_HOST=your_server.database.windows.net
+DATAPILOT_DB_PORT=1433
+DATAPILOT_DB_USER=your_user
+DATAPILOT_DB_PASSWORD=your_password
+DATAPILOT_DB_DATABASE=your_database
+DATAPILOT_DB_SCHEMA=dbo
+```
+
+Recommended read-only role:
+
+```sql
+CREATE LOGIN datapilot_user WITH PASSWORD = 'secure_pass';
+CREATE USER datapilot_user FOR LOGIN datapilot_user;
+ALTER ROLE db_datareader ADD MEMBER datapilot_user;
+```
+
 ### LLM Provider
 
 **Groq (FREE — recommended)**
